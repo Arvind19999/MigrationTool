@@ -4,7 +4,20 @@ services:
   api:
     build: .
     ports:
-      - "8000:8000"
+      - "9000:9000"
     volumes:
       - ./app:/app/app
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+      - ./job_store:/app/job_store
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_TEST_SCRIPT=/opt/spark/jobs/check_connection.py
+      - SPARK_IVY_CACHE=/tmp/ivy
+      - SPARK_PIPELINE_SCRIPT=/opt/spark/jobs/pipeline_main.py
+    command: uvicorn app.main:app --host 0.0.0.0 --port 9000 --reload
+    networks:
+      - spark-net
+
+networks:
+  spark-net:
+    external: true
