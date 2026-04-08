@@ -1,36 +1,58 @@
-import FlowCanvas from './components/FlowCanvas'
-import PalettePanel from './components/PalettePanel'
+import { useState } from 'react'
+import { NavLink, Navigate, Route, Routes } from 'react-router-dom'
+import ConnectionProfilePage from './pages/ConnectionProfilePage'
+import DashboardPage from './pages/DashboardPage'
+import EnginePage from './pages/EnginePage'
+import JobPage from './pages/JobPage'
+import PipelinePage from './pages/PipelinePage'
+import QueryPage from './pages/QueryPage'
 
 const railItems = [
-  { id: 'home', label: 'Studio' },
-  { id: 'search', label: 'Explore' },
-  { id: 'schedule', label: 'Schedules' },
-  { id: 'runs', label: 'Runs' },
-  { id: 'teams', label: 'Teams' },
-  { id: 'settings', label: 'Settings' }
-]
+  { id: 'dashboard', label: 'Dashboard', path: '/dashboard' },
 
-const stats = [
-  { label: 'Active Jobs', value: '12' },
-  { label: 'Last Run', value: '6m ago' },
-  { label: 'Latency', value: '1.3s' }
+  {
+    id: 'connectionprofile',
+    label: 'Connection Profile',
+    path: '/connection_profile'
+  },
+  { id: 'pipeline', label: 'Pipeline', path: '/pipeline/123' },
+  { id: 'query', label: 'Query', path: '/query/123' },
+  { id: 'job', label: 'Job', path: '/job/123' },
+  { id: 'engine', label: 'Engine', path: '/engine' }
 ]
 
 export default function App() {
+  const [railExpanded, setRailExpanded] = useState(false)
+
   return (
-    <div className="app">
-      <nav className="rail">
-        <div className="rail-logo">ELT</div>
+    <div className={`app ${railExpanded ? 'is-rail-expanded' : ''}`}>
+      <nav className={`rail ${railExpanded ? 'is-expanded' : ''}`}>
+        <div className="rail-header">
+          <div className="rail-logo">ELT</div>
+          <button
+            className="rail-toggle"
+            type="button"
+            aria-label={railExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
+            aria-pressed={railExpanded}
+            onClick={() => setRailExpanded((prev) => !prev)}
+          >
+            <span className="rail-toggle-icon">{railExpanded ? '<' : '>'}</span>
+          </button>
+        </div>
         <div className="rail-stack">
-          {railItems.map((item, index) => (
-            <button
-              className={`rail-button ${index === 0 ? 'is-active' : ''}`}
+          {railItems.map((item) => (
+            <NavLink
+              className={({ isActive }) =>
+                `rail-button ${isActive ? 'is-active' : ''}`
+              }
               key={item.id}
-              type="button"
+              to={item.path}
               aria-label={item.label}
+              end={item.path === '/dashboard'}
             >
               <span className={`rail-icon rail-${item.id}`}></span>
-            </button>
+              <span className="rail-label">{item.label}</span>
+            </NavLink>
           ))}
         </div>
         <div className="rail-footer">
@@ -42,68 +64,16 @@ export default function App() {
       </nav>
 
       <div className="main">
-        <header className="topbar">
-          <div>
-            <p className="eyebrow">Pipeline</p>
-            <h1 className="title">Atlas Growth Sync</h1>
-          </div>
-          <div className="topbar-actions">
-            <div className="stats">
-              {stats.map((stat) => (
-                <div className="stat" key={stat.label}>
-                  <p>{stat.value}</p>
-                  <span>{stat.label}</span>
-                </div>
-              ))}
-            </div>
-            <button className="primary-button" type="button">
-              Run Pipeline
-            </button>
-          </div>
-        </header>
-
-        <div className="workspace">
-          <PalettePanel />
-          <section className="canvas-shell">
-            <div className="canvas-header">
-              <div className="tabs">
-                <button className="tab is-active" type="button">
-                  Flow Builder
-                </button>
-                <button className="tab" type="button">
-                  Monitoring
-                </button>
-                <button className="tab" type="button">
-                  Alerts
-                </button>
-              </div>
-              <div className="canvas-actions">
-                <button className="ghost-button" type="button">
-                  Validate
-                </button>
-                <button className="ghost-button" type="button">
-                  Publish
-                </button>
-              </div>
-            </div>
-            <FlowCanvas />
-          </section>
-        </div>
-
-        <footer className="footer">
-          <p>ELT Studio · Unified drag-and-drop pipeline design</p>
-          <div className="footer-links">
-            <button className="link-button" type="button">
-              Docs
-            </button>
-            <button className="link-button" type="button">
-              Support
-            </button>
-            <button className="link-button" type="button">
-              Status
-            </button>
-          </div>
-        </footer>
+        <Routes>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/pipeline/:id" element={<PipelinePage />} />
+          <Route path="/connection_profile" element={<ConnectionProfilePage />} />
+          <Route path="/query/:id" element={<QueryPage />} />
+          <Route path="/job/:id" element={<JobPage />} />
+          <Route path="/engine" element={<EnginePage />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
       </div>
     </div>
   )

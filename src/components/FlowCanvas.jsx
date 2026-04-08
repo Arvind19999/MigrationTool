@@ -169,8 +169,17 @@ export default function FlowCanvas() {
       }
 
       setNodes((nds) => nds.concat(newNode))
+
+      const shouldOpenSourceDialog =
+        template.kind === 'source' &&
+        template.label?.toLowerCase().includes('postgres')
+
+      if (shouldOpenSourceDialog) {
+        setTransformDialog(null)
+        setDialogNode({ label: template.label })
+      }
     },
-    [reactFlowInstance, setNodes]
+    [reactFlowInstance, setNodes, setDialogNode, setTransformDialog]
   )
 
   const getTransformType = useCallback((label = '') => {
@@ -188,9 +197,9 @@ export default function FlowCanvas() {
 
   const handleNodeClick = useCallback(
     (_, node) => {
-      if (node?.data?.kind === 'source') {
+      if (node?.data?.kind === 'source' || node?.data?.kind === 'sink') {
         setTransformDialog(null)
-        setDialogNode({ label: node.data.label })
+        setDialogNode({ label: node.data.label, kind: node.data.kind })
         return
       }
       if (node?.data?.kind === 'transform') {
@@ -209,20 +218,6 @@ export default function FlowCanvas() {
 
   return (
     <div className="flow-shell">
-      <div className="flow-toolbar">
-        <div>
-          <span className="pill">Cluster: Aster-3</span>
-          <span className="pill is-active">Autosave On</span>
-        </div>
-        <div>
-          <button className="icon-button" type="button">
-            +
-          </button>
-          <button className="icon-button" type="button">
-            Share
-          </button>
-        </div>
-      </div>
       <div className="flow-canvas" onDrop={onDrop} onDragOver={onDragOver}>
         <ReactFlow
           nodes={nodes}
