@@ -1,9 +1,13 @@
 import json
 import os
+import shutil
 import subprocess
 import uuid
 
 from .job_store import create_job, update_job
+
+def _resolve_docker_bin() -> str | None:
+    return os.getenv("DOCKER_BIN") or shutil.which("docker") or shutil.which("docker.io")
 
 def _docker_exec(command, input_text=None, timeout=120):
     return subprocess.run(
@@ -23,13 +27,23 @@ def run_pipeline_with_config(config: dict) -> dict:
     packages = config.get("packages") or []
     config_dir = "/opt/spark/jobs/configs"
     config_path = f"{config_dir}/{run_id}.json"
+    docker_bin = _resolve_docker_bin()
+    if not docker_bin:
+        details = "Docker CLI not found in API container. Install docker.io or set DOCKER_BIN."
+        update_job(run_id, "failed", details)
+        return {
+            "ok": False,
+            "run_id": run_id,
+            "message": "Failed to run pipeline.",
+            "details": details,
+        }
 
     config_payload = json.dumps(config)
 
     create_job(run_id, config)
 
     write_cmd = [
-        "docker",
+        docker_bin,
         "exec",
         "-i",
         "spark-master",
@@ -49,7 +63,7 @@ def run_pipeline_with_config(config: dict) -> dict:
         }
 
     submit_cmd = [
-        "docker",
+        docker_bin,
         "exec",
         "-i",
         "spark-master",

@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   api:
     build: .
@@ -9,11 +7,13 @@ services:
       - ./app:/app/app
       - ./job_store:/app/job_store
       - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
     environment:
       - SPARK_MASTER_URL=spark://spark-master:7077
-      - SPARK_TEST_SCRIPT=/opt/spark/jobs/check_connection.py
+      - SPARK_TEST_SCRIPT=/opt/spark/jobs/connection_test/check_connection.py
       - SPARK_IVY_CACHE=/tmp/ivy
       - SPARK_PIPELINE_SCRIPT=/opt/spark/jobs/pipeline_main.py
+      - DOCKER_BIN=/usr/bin/docker
     command: uvicorn app.main:app --host 0.0.0.0 --port 9000 --reload
     networks:
       - spark-net
