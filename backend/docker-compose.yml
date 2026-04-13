@@ -9,6 +9,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/bin/docker:/usr/bin/docker
     environment:
+      - DATABASE_URL=postgresql+psycopg://elt:elt@postgres:5432/elt
       - SPARK_MASTER_URL=spark://spark-master:7077
       - SPARK_TEST_SCRIPT=/opt/spark/jobs/connection_test/check_connection.py
       - SPARK_IVY_CACHE=/tmp/ivy
@@ -17,7 +18,22 @@ services:
     command: uvicorn app.main:app --host 0.0.0.0 --port 9000 --reload
     networks:
       - spark-net
+  postgres:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=elt
+      - POSTGRES_PASSWORD=elt
+      - POSTGRES_DB=elt
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - spark-net
 
 networks:
   spark-net:
     external: true
+
+volumes:
+  postgres_data:

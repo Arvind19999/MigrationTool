@@ -1,2 +1,26 @@
+# fastapi==0.111.1
+# uvicorn[standard]==0.30.3
+# SQLAlchemy==2.0.32
+# psycopg[binary]>=3.1.0
+# passlib[bcrypt]==1.7.4
+
+# Web Framework
 fastapi==0.111.1
 uvicorn[standard]==0.30.3
+
+# Database
+SQLAlchemy==2.0.32
+psycopg[binary]>=3.1.0
+alembic==1.13.2              # DB migrations
+
+# Auth & Security
+passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.3.0   # JWT tokens
+python-multipart==0.0.9            # form data / file uploads
+
+# Config
+python-dotenv==1.0.1          # .env file support
+
+# Validation (usually comes with fastapi but pin it)
+pydantic==2.8.2
+pydantic-settings==2.3.4      # settings management via .env
