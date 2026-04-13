@@ -56,6 +56,8 @@ class ConnectionTest(Base):
     table: Mapped[str] = mapped_column(String(255), nullable=False)
     schema: Mapped[str] = mapped_column(String(255), nullable=True)
     jdbc_url: Mapped[str] = mapped_column(Text, nullable=False)
+    driver: Mapped[str] = mapped_column(String(255), nullable=False)
+    jdbc_package: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     options: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
     success: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     message: Mapped[Optional[str]] = mapped_column(Text, nullable=True)

@@ -1,16 +1,17 @@
 """create users and connection_tests
 
-Revision ID: 0001_create_users_and_connection_tests
-Revises: 
-Create Date: 2026-04-12 00:00:00.000000
+Revision ID: 0001
+Revises:
+Create Date: 2026-04-13 00:00:00.000000
 """
 
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
+
 # revision identifiers, used by Alembic.
-revision = "0001_create_users_and_connection_tests"
+revision = "0001"
 down_revision = None
 branch_labels = None
 depends_on = None
